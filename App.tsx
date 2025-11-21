@@ -8,6 +8,7 @@ import Inventory from './pages/Inventory';
 import Reservations from './pages/Reservations';
 import AIAgent from './pages/AIAgent';
 import KDS from './pages/KDS';
+import Admin from './pages/Admin';
 import { Menu } from 'lucide-react';
 
 const MobileHeader = ({ onOpen }: { onOpen: () => void }) => (
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/reservations" element={<Reservations />} />
                 <Route path="/agent" element={<AIAgent />} />
                 <Route path="/kds" element={<KDS />} />
+                <Route path="/admin" element={<Admin />} />
               </Routes>
             </main>
           </div>

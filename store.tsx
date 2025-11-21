@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Ingredient, MenuItem, Table, Order, Reservation, OrderStatus, TableStatus } from './types';
-import { INITIAL_INGREDIENTS, INITIAL_TABLES, INITIAL_RESERVATIONS, MENU_ITEMS } from './constants';
+import { INITIAL_INGREDIENTS, INITIAL_TABLES, INITIAL_RESERVATIONS, MENU_ITEMS as INITIAL_MENU_ITEMS } from './constants';
 
 interface AppContextType {
   ingredients: Ingredient[];
@@ -8,6 +8,8 @@ interface AppContextType {
   orders: Order[];
   reservations: Reservation[];
   activeOrder: Order | null;
+  menuItems: MenuItem[];
+  systemPrompt: string;
   
   // Actions
   createOrder: (tableId: string) => void;
@@ -19,9 +21,28 @@ interface AppContextType {
   updateReservation: (id: string, updates: Partial<Reservation>) => void;
   deductInventory: (menuItem: MenuItem) => void;
   updateIngredient: (id: string, updates: Partial<Ingredient>) => void;
+  
+  // Admin Actions
+  updateSystemPrompt: (prompt: string) => void;
+  addMenuItem: (item: MenuItem) => void;
+  updateMenuItem: (id: string, updates: Partial<MenuItem>) => void;
+  deleteMenuItem: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
+
+const DEFAULT_SYSTEM_PROMPT = `
+You are "ShiftBot", the AI Operations Assistant for a busy restaurant called "SHIFT HAPPENS!".
+Your tone is professional, efficient, but slightly witty.
+Your capabilities:
+1. Answer questions about current inventory levels.
+2. Suggest recipes based on menu items.
+3. Draft responses to guest reviews (simulate this).
+4. Provide advice on handling operational conflicts.
+
+Keep answers concise (under 150 words) unless asked for a detailed report.
+Format your response with Markdown if helpful.
+`.trim();
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>(INITIAL_INGREDIENTS);
@@ -29,6 +50,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [orders, setOrders] = useState<Order[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>(INITIAL_RESERVATIONS);
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(INITIAL_MENU_ITEMS);
+  const [systemPrompt, setSystemPrompt] = useState<string>(DEFAULT_SYSTEM_PROMPT);
 
   const createOrder = (tableId: string) => {
     const newOrder: Order = {
@@ -92,7 +115,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     // Logic: When order is "Sent" to kitchen, deduct inventory
     order.items.forEach(item => {
-      const menuItem = MENU_ITEMS.find(m => m.id === item.menuItemId);
+      const menuItem = menuItems.find(m => m.id === item.menuItemId);
       if (menuItem) {
         // Deduct for each quantity
         for(let i=0; i < item.quantity; i++) {
@@ -121,6 +144,23 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setReservations(prev => prev.map(res => res.id === id ? { ...res, ...updates } : res));
   };
 
+  // Admin Actions
+  const updateSystemPrompt = (prompt: string) => {
+    setSystemPrompt(prompt);
+  };
+
+  const addMenuItem = (item: MenuItem) => {
+    setMenuItems(prev => [...prev, item]);
+  };
+
+  const updateMenuItem = (id: string, updates: Partial<MenuItem>) => {
+    setMenuItems(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item));
+  };
+
+  const deleteMenuItem = (id: string) => {
+    setMenuItems(prev => prev.filter(item => item.id !== id));
+  };
+
   return (
     <AppContext.Provider value={{
       ingredients,
@@ -128,6 +168,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       orders,
       reservations,
       activeOrder,
+      menuItems,
+      systemPrompt,
       createOrder,
       addToOrder,
       completeOrder,
@@ -136,7 +178,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       addReservation,
       updateReservation,
       deductInventory,
-      updateIngredient
+      updateIngredient,
+      updateSystemPrompt,
+      addMenuItem,
+      updateMenuItem,
+      deleteMenuItem
     }}>
       {children}
     </AppContext.Provider>

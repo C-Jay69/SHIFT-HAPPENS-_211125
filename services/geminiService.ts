@@ -7,12 +7,13 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || 'dummy_key' });
 
 export const generateRestaurantAssistantResponse = async (
   prompt: string,
-  contextData: string
+  contextData: string,
+  systemInstructionOverride?: string
 ): Promise<string> => {
   try {
     const modelId = 'gemini-2.5-flash'; 
     
-    const systemInstruction = `
+    const defaultSystemInstruction = `
       You are "ShiftBot", the AI Operations Assistant for a busy restaurant called "SHIFT HAPPENS!".
       Your tone is professional, efficient, but slightly witty.
       
@@ -29,11 +30,22 @@ export const generateRestaurantAssistantResponse = async (
       Format your response with Markdown if helpful.
     `;
 
+    // Use override if provided, otherwise default
+    let finalSystemInstruction = systemInstructionOverride || defaultSystemInstruction;
+    
+    // Append context data if it wasn't included in the override (simple check)
+    if (systemInstructionOverride && !systemInstructionOverride.includes("real-time context")) {
+        finalSystemInstruction += `\n\nReal-time Context:\n${contextData}`;
+    } else if (!systemInstructionOverride) {
+        // Default already has the placeholder, but we need to ensure contextData is injected if we didn't use the template literal above
+        // Actually, the default variable above uses the template literal.
+    }
+
     const response = await ai.models.generateContent({
       model: modelId,
       contents: prompt,
       config: {
-        systemInstruction: systemInstruction,
+        systemInstruction: finalSystemInstruction,
         thinkingConfig: { thinkingBudget: 0 }, // Low latency for chat
       },
     });

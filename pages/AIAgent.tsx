@@ -9,7 +9,7 @@ const AIAgent = () => {
     { role: 'ai', text: "Hello! I'm ShiftBot. Ask me about recipes, inventory, or drafting replies to reviews." }
   ]);
   const [loading, setLoading] = useState(false);
-  const { ingredients, MENU_ITEMS } = useAppStore();
+  const { ingredients, menuItems, systemPrompt } = useAppStore();
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -22,10 +22,11 @@ const AIAgent = () => {
     // Prepare context from current store state
     const contextSummary = `
       Current Low Stock Items: ${ingredients.filter(i => i.stock <= i.threshold).map(i => i.name).join(', ')}.
-      Menu Categories: ${['FOOD', 'DRINK'].join(', ')}.
+      Menu Categories: ${Array.from(new Set(menuItems.map(i => i.category))).join(', ')}.
+      Active Menu Items: ${menuItems.map(i => i.name).join(', ')}.
     `;
 
-    const responseText = await generateRestaurantAssistantResponse(userMsg, contextSummary);
+    const responseText = await generateRestaurantAssistantResponse(userMsg, contextSummary, systemPrompt);
     
     setMessages(prev => [...prev, { role: 'ai', text: responseText }]);
     setLoading(false);

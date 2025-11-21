@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store';
-import { MENU_ITEMS } from '../constants';
 import { MenuItem, TableStatus } from '../types';
 import { Plus, Minus, Trash2, CreditCard, ChefHat } from 'lucide-react';
 
 const POS = () => {
-  const { tables, activeOrder, createOrder, addToOrder, completeOrder } = useAppStore();
+  const { tables, activeOrder, createOrder, addToOrder, completeOrder, menuItems } = useAppStore();
   const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'FOOD' | 'DRINK'>('ALL');
 
   const filteredItems = selectedCategory === 'ALL' 
-    ? MENU_ITEMS 
-    : MENU_ITEMS.filter(i => i.category === selectedCategory);
+    ? menuItems 
+    : menuItems.filter(i => i.category === selectedCategory);
 
   if (!activeOrder) {
     return (
