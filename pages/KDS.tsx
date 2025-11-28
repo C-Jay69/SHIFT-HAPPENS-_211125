@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppStore } from '../store';
 import { OrderStatus } from '../types';
-import { Clock, CheckCircle, ChefHat, Coffee } from 'lucide-react';
+import { Clock, CheckCircle, ChefHat, Coffee, AlertCircle } from 'lucide-react';
 
 const KDS = () => {
   const { orders, updateOrderStatus, tables } = useAppStore();
@@ -63,11 +63,17 @@ const KDS = () => {
               <div className="flex-1 p-4 space-y-3 overflow-y-auto max-h-[400px]">
                 {order.items.map((item, idx) => (
                   <div key={idx} className="flex items-start gap-3 border-b border-gray-100 pb-2 last:border-0">
-                    <span className="font-mono font-bold text-lg text-shift-dark">{item.quantity}x</span>
-                    <div>
-                      <p className="font-bold text-gray-800">{item.name}</p>
-                      {/* Placeholder for modifiers */}
-                      <p className="text-xs text-gray-400 italic">No modifiers</p>
+                    <span className="font-mono font-bold text-lg text-shift-dark min-w-[2rem]">{item.quantity}x</span>
+                    <div className="flex-1">
+                      <p className="font-bold text-gray-800 leading-tight">{item.name}</p>
+                      {item.notes ? (
+                          <div className="flex items-start gap-1 mt-1 text-red-600 bg-red-50 p-1.5 rounded">
+                              <AlertCircle size={12} className="shrink-0 mt-0.5" />
+                              <p className="text-xs font-bold">{item.notes}</p>
+                          </div>
+                      ) : (
+                          <p className="text-xs text-gray-300 italic mt-1">No modifiers</p>
+                      )}
                     </div>
                   </div>
                 ))}

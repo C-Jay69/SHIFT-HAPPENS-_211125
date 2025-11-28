@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store';
 import { MenuItem } from '../types';
-import { Lock, Save, Plus, Trash2, AlertTriangle, Activity, Database, Bot, Settings, RefreshCcw, Check, X } from 'lucide-react';
+import { Lock, Save, Plus, Trash2, AlertTriangle, Activity, Database, Bot, Settings, RefreshCcw, Check, X, Palette } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 
 const COLORS = ['#0000FF', '#FFBF00', '#BEF754', '#FF00FF', '#00FFFF'];
+
+const COLOR_OPTIONS = [
+  { name: 'Amber', class: 'bg-shift-amber', hex: '#FFBF00' },
+  { name: 'Lime', class: 'bg-shift-lime', hex: '#BEF754' },
+  { name: 'Cyan', class: 'bg-shift-cyan', hex: '#00FFFF' },
+  { name: 'Magenta', class: 'bg-shift-magenta', hex: '#FF00FF' },
+  { name: 'Gray', class: 'bg-shift-gray', hex: '#DCDFD5' },
+  { name: 'Blue', class: 'bg-shift-blue text-white', hex: '#0000FF' },
+];
 
 const Admin = () => {
   const { menuItems, updateMenuItem, addMenuItem, deleteMenuItem, systemPrompt, updateSystemPrompt, orders, ingredients } = useAppStore();
@@ -31,7 +40,10 @@ const Admin = () => {
   };
 
   const handleSaveMenuItem = () => {
-    if (!editItem || !editItem.name || !editItem.price) return;
+    if (!editItem || !editItem.name || !editItem.price) {
+        alert("Name and Price are required.");
+        return;
+    }
     
     if (isNewItem) {
       const newItem: MenuItem = {
@@ -177,7 +189,7 @@ const Admin = () => {
                <h3 className="font-bold">Menu Management</h3>
                <button 
                  onClick={() => { setIsNewItem(true); setEditItem({ name: '', price: 0, category: 'FOOD', color: 'bg-shift-gray' }); }}
-                 className="flex items-center gap-2 bg-shift-blue text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700"
+                 className="flex items-center gap-2 bg-shift-blue text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors"
                >
                  <Plus size={16} /> Add Item
                </button>
@@ -185,50 +197,121 @@ const Admin = () => {
              
              {editItem && (
                <div className="p-6 bg-blue-50 border-b border-blue-100 animate-fade-in">
-                  <h4 className="font-bold text-blue-800 mb-4">{isNewItem ? 'Create New Item' : 'Edit Item'}</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                    <div>
-                      <label className="text-xs font-bold text-gray-500 uppercase">Name</label>
-                      <input 
-                        className="w-full p-2 border rounded bg-white" 
-                        value={editItem.name} 
-                        onChange={e => setEditItem({...editItem, name: e.target.value})}
-                      />
+                  <div className="flex justify-between items-start mb-4">
+                    <h4 className="font-bold text-blue-800">{isNewItem ? 'Create New Item' : 'Edit Item'}</h4>
+                    <button onClick={() => setEditItem(null)} className="text-blue-400 hover:text-blue-800"><X size={18}/></button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {/* Left Column: Inputs */}
+                    <div className="space-y-4">
+                        <div>
+                        <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Name</label>
+                        <input 
+                            className="w-full p-3 border border-blue-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-shift-blue/20" 
+                            value={editItem.name} 
+                            onChange={e => setEditItem({...editItem, name: e.target.value})}
+                            placeholder="e.g., Truffle Fries"
+                        />
+                        </div>
+                        <div>
+                        <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Price ($)</label>
+                        <input 
+                            type="number"
+                            step="0.01"
+                            className="w-full p-3 border border-blue-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-shift-blue/20" 
+                            value={editItem.price} 
+                            onChange={e => setEditItem({...editItem, price: parseFloat(e.target.value)})}
+                        />
+                        </div>
+                        <div>
+                        <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Category</label>
+                        <select 
+                            className="w-full p-3 border border-blue-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-shift-blue/20"
+                            value={editItem.category}
+                            onChange={e => setEditItem({...editItem, category: e.target.value as any})}
+                        >
+                            <option value="FOOD">FOOD</option>
+                            <option value="DRINK">DRINK</option>
+                            <option value="DESSERT">DESSERT</option>
+                        </select>
+                        </div>
                     </div>
+
+                    {/* Right Column (Color) */}
                     <div>
-                      <label className="text-xs font-bold text-gray-500 uppercase">Price</label>
-                      <input 
-                        type="number"
-                        className="w-full p-2 border rounded bg-white" 
-                        value={editItem.price} 
-                        onChange={e => setEditItem({...editItem, price: parseFloat(e.target.value)})}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-gray-500 uppercase">Category</label>
-                      <select 
-                         className="w-full p-2 border rounded bg-white"
-                         value={editItem.category}
-                         onChange={e => setEditItem({...editItem, category: e.target.value as any})}
-                      >
-                        <option value="FOOD">FOOD</option>
-                        <option value="DRINK">DRINK</option>
-                        <option value="DESSERT">DESSERT</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-gray-500 uppercase">Color Class</label>
-                      <input 
-                        className="w-full p-2 border rounded bg-white" 
-                        value={editItem.color} 
-                        onChange={e => setEditItem({...editItem, color: e.target.value})}
-                        placeholder="bg-shift-..."
-                      />
+                        <label className="text-xs font-bold text-gray-500 uppercase block mb-2">Card Style</label>
+                        <div className="grid grid-cols-3 gap-3">
+                            {COLOR_OPTIONS.map((option) => (
+                                <button
+                                    key={option.name}
+                                    onClick={() => setEditItem({...editItem, color: option.class})}
+                                    className={`
+                                        relative h-16 rounded-lg border-2 transition-all flex flex-col items-center justify-center
+                                        ${editItem.color === option.class ? 'border-black ring-1 ring-black scale-105' : 'border-transparent hover:border-gray-300'}
+                                    `}
+                                    style={{ backgroundColor: option.hex }}
+                                >
+                                    <span className={`text-[10px] font-bold uppercase ${option.name === 'Blue' || option.name === 'Dark' ? 'text-white' : 'text-black'}`}>
+                                        {option.name}
+                                    </span>
+                                    {editItem.color === option.class && (
+                                        <div className="absolute -top-2 -right-2 bg-black text-white rounded-full p-0.5">
+                                            <Check size={12} />
+                                        </div>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                        
+                        <div className="mt-6 p-3 bg-white rounded-lg border border-gray-200">
+                             <p className="text-xs text-gray-400 uppercase font-bold mb-2">Preview</p>
+                             <div className={`${editItem.color} h-24 rounded-lg p-3 flex flex-col justify-between shadow-sm`}>
+                                <span className="font-bold text-sm leading-tight text-shift-dark bg-white/80 px-2 py-1 rounded w-fit">{editItem.name || 'Item Name'}</span>
+                                <span className="bg-white/90 px-2 py-1 rounded-md font-mono font-bold text-shift-dark w-fit">${Number(editItem.price || 0).toFixed(2)}</span>
+                             </div>
+                        </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button onClick={handleSaveMenuItem} className="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700">Save</button>
-                    <button onClick={() => setEditItem(null)} className="text-gray-500 px-4 py-2 hover:bg-gray-200 rounded">Cancel</button>
+
+                  {/* Recipe Breakdown Section */}
+                  <div className="mb-6">
+                     <h4 className="text-xs font-bold text-shift-blue uppercase mb-2 flex items-center gap-2">
+                        <Database size={14} /> Recipe & Inventory Impact
+                     </h4>
+                     <div className="bg-white rounded-lg border border-blue-200 p-4">
+                        {editItem.recipe && editItem.recipe.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {editItem.recipe.map((r, idx) => {
+                                    const ing = ingredients.find(i => i.id === r.ingredientId);
+                                    return (
+                                        <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-sm text-gray-700">{ing?.name || 'Unknown'}</span>
+                                                <span className="text-[10px] text-gray-400 uppercase">In Stock: {ing?.stock} {ing?.unit}</span>
+                                            </div>
+                                            <span className="font-mono font-bold text-shift-blue bg-blue-100 px-2 py-1 rounded text-xs">
+                                                -{r.quantity} {ing?.unit}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center p-8 text-gray-400 italic bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                                No ingredients configured. This item will not deduct from inventory.
+                            </div>
+                        )}
+                     </div>
+                  </div>
+                  
+                  <div className="flex gap-3 justify-end pt-4 border-t border-blue-200">
+                    <button onClick={() => setEditItem(null)} className="px-6 py-2 text-gray-500 font-bold hover:bg-blue-100 rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button onClick={handleSaveMenuItem} className="px-6 py-2 bg-shift-blue text-white font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                        <Save size={18} /> Save Item
+                    </button>
                   </div>
                </div>
              )}
@@ -244,22 +327,39 @@ const Admin = () => {
                </thead>
                <tbody className="divide-y divide-gray-100">
                  {menuItems.map(item => (
-                   <tr key={item.id} className="hover:bg-gray-50">
-                     <td className="px-6 py-3 font-medium">{item.name}</td>
+                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                     <td className="px-6 py-3 font-medium flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full ${item.color.split(' ')[0]}`} style={{ border: '1px solid rgba(0,0,0,0.1)' }} />
+                        {item.name}
+                     </td>
                      <td className="px-6 py-3">
-                       <span className={`text-xs font-bold px-2 py-1 rounded ${item.category === 'FOOD' ? 'bg-orange-100 text-orange-800' : 'bg-purple-100 text-purple-800'}`}>
+                       <span className={`text-xs font-bold px-2 py-1 rounded ${item.category === 'FOOD' ? 'bg-orange-100 text-orange-800' : item.category === 'DRINK' ? 'bg-purple-100 text-purple-800' : 'bg-pink-100 text-pink-800'}`}>
                          {item.category}
                        </span>
                      </td>
                      <td className="px-6 py-3 text-right font-mono">${item.price.toFixed(2)}</td>
                      <td className="px-6 py-3 text-right">
                        <div className="flex justify-end gap-2">
-                         <button onClick={() => { setIsNewItem(false); setEditItem(item); }} className="p-2 hover:bg-gray-200 rounded-full text-blue-600"><Settings size={16}/></button>
-                         <button onClick={() => deleteMenuItem(item.id)} className="p-2 hover:bg-red-100 rounded-full text-red-600"><Trash2 size={16}/></button>
+                         <button onClick={() => { setIsNewItem(false); setEditItem(item); }} className="p-2 hover:bg-blue-100 rounded-full text-blue-600 transition-colors"><Settings size={16}/></button>
+                         <button 
+                            onClick={() => {
+                                if(window.confirm('Are you sure you want to delete this item?')) {
+                                    deleteMenuItem(item.id);
+                                }
+                            }} 
+                            className="p-2 hover:bg-red-100 rounded-full text-red-600 transition-colors"
+                        >
+                            <Trash2 size={16}/>
+                        </button>
                        </div>
                      </td>
                    </tr>
                  ))}
+                 {menuItems.length === 0 && (
+                     <tr>
+                         <td colSpan={4} className="p-8 text-center text-gray-400 italic">No menu items found. Click "Add Item" to create one.</td>
+                     </tr>
+                 )}
                </tbody>
              </table>
           </div>

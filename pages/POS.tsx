@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store';
 import { MenuItem, TableStatus } from '../types';
-import { Plus, Minus, Trash2, CreditCard, ChefHat } from 'lucide-react';
+import { Plus, Minus, Trash2, CreditCard, ChefHat, StickyNote, X } from 'lucide-react';
 
 const POS = () => {
-  const { tables, activeOrder, createOrder, addToOrder, completeOrder, menuItems } = useAppStore();
+  const { tables, activeOrder, createOrder, addToOrder, completeOrder, menuItems, updateOrderItemQuantity, removeOrderItem, updateOrderItemNotes } = useAppStore();
   const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'FOOD' | 'DRINK'>('ALL');
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
 
   const filteredItems = selectedCategory === 'ALL' 
     ? menuItems 
@@ -86,17 +87,88 @@ const POS = () => {
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {activeOrder.items.map((item, idx) => (
-            <div key={`${item.menuItemId}-${idx}`} className="flex justify-between items-center bg-white border border-gray-100 p-3 rounded-lg shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="bg-gray-100 w-8 h-8 flex items-center justify-center rounded-full font-mono text-sm font-bold">
-                  {item.quantity}x
+            <div key={`${item.menuItemId}-${idx}`} className="flex flex-col bg-white border border-gray-100 p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3 flex-1">
+                    {/* Quantity Controls */}
+                    <div className="flex items-center bg-gray-100 rounded-lg border border-gray-200 shrink-0">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); updateOrderItemQuantity(item.menuItemId, -1); }}
+                            className="p-1.5 hover:bg-gray-200 rounded-l-lg text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                            disabled={item.quantity <= 1}
+                        >
+                            <Minus size={12} strokeWidth={3} />
+                        </button>
+                        <span className="w-6 text-center font-mono text-sm font-bold text-gray-800">{item.quantity}</span>
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); updateOrderItemQuantity(item.menuItemId, 1); }}
+                            className="p-1.5 hover:bg-gray-200 rounded-r-lg text-gray-600"
+                        >
+                            <Plus size={12} strokeWidth={3} />
+                        </button>
+                    </div>
+                    
+                    <div className="flex-1 min-w-0 pl-1">
+                    <p className="font-bold text-sm truncate" title={item.name}>{item.name}</p>
+                    <p className="text-xs text-gray-400">${item.price.toFixed(2)}</p>
+                    </div>
                 </div>
-                <div>
-                  <p className="font-bold text-sm">{item.name}</p>
-                  <p className="text-xs text-gray-400">${item.price.toFixed(2)}</p>
+
+                <div className="flex items-center gap-3 pl-2 shrink-0">
+                    <p className="font-bold font-mono text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); removeOrderItem(item.menuItemId); }}
+                        className="text-gray-300 hover:text-red-500 transition-colors p-1"
+                        title="Remove item"
+                    >
+                        <Trash2 size={16} />
+                    </button>
                 </div>
               </div>
-              <p className="font-bold font-mono">${(item.price * item.quantity).toFixed(2)}</p>
+
+              {/* Note Section */}
+              <div className="mt-2 border-t border-gray-50 pt-2">
+                 {editingNoteId === item.menuItemId ? (
+                     <div className="flex gap-2 animate-fade-in">
+                         <input 
+                            type="text"
+                            autoFocus
+                            placeholder="Add note (e.g. No onion)"
+                            defaultValue={item.notes || ''}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    updateOrderItemNotes(item.menuItemId, e.currentTarget.value);
+                                    setEditingNoteId(null);
+                                } else if (e.key === 'Escape') {
+                                    setEditingNoteId(null);
+                                }
+                            }}
+                            onBlur={(e) => {
+                                updateOrderItemNotes(item.menuItemId, e.target.value);
+                                setEditingNoteId(null);
+                            }}
+                            className="flex-1 text-xs p-2 bg-blue-50 border border-blue-200 rounded text-shift-dark focus:outline-none focus:border-shift-blue"
+                         />
+                         <button onClick={() => setEditingNoteId(null)} className="p-1 hover:bg-gray-200 rounded text-gray-500">
+                             <X size={14} />
+                         </button>
+                     </div>
+                 ) : (
+                    <div 
+                        className="flex items-center gap-2 cursor-pointer group"
+                        onClick={() => setEditingNoteId(item.menuItemId)}
+                    >
+                         <div className={`p-1 rounded ${item.notes ? 'text-shift-blue bg-blue-50' : 'text-gray-300 group-hover:text-gray-500'}`}>
+                            <StickyNote size={14} />
+                         </div>
+                         {item.notes ? (
+                             <p className="text-xs font-bold text-shift-blue">{item.notes}</p>
+                         ) : (
+                             <p className="text-xs text-gray-300 group-hover:text-gray-400 italic">Add note...</p>
+                         )}
+                    </div>
+                 )}
+              </div>
             </div>
           ))}
           

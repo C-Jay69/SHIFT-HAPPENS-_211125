@@ -14,6 +14,9 @@ interface AppContextType {
   // Actions
   createOrder: (tableId: string) => void;
   addToOrder: (menuItem: MenuItem) => void;
+  updateOrderItemQuantity: (menuItemId: string, delta: number) => void;
+  updateOrderItemNotes: (menuItemId: string, notes: string) => void;
+  removeOrderItem: (menuItemId: string) => void;
   completeOrder: (orderId: string) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   updateTableStatus: (tableId: string, status: TableStatus) => void;
@@ -90,6 +93,58 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setActiveOrder(updatedOrder);
     
     // Update in global orders list
+    setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
+  };
+
+  const updateOrderItemQuantity = (menuItemId: string, delta: number) => {
+    if (!activeOrder) return;
+
+    const updatedOrder = { ...activeOrder };
+    const itemIndex = updatedOrder.items.findIndex(i => i.menuItemId === menuItemId);
+
+    if (itemIndex >= 0) {
+      const item = { ...updatedOrder.items[itemIndex] };
+      const newQuantity = item.quantity + delta;
+      
+      if (newQuantity > 0) {
+          item.quantity = newQuantity;
+          updatedOrder.items[itemIndex] = item;
+          
+          // Recalculate total
+          updatedOrder.total = updatedOrder.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+          setActiveOrder(updatedOrder);
+          setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
+      }
+    }
+  };
+
+  const updateOrderItemNotes = (menuItemId: string, notes: string) => {
+    if (!activeOrder) return;
+
+    const updatedOrder = { ...activeOrder };
+    const itemIndex = updatedOrder.items.findIndex(i => i.menuItemId === menuItemId);
+
+    if (itemIndex >= 0) {
+      const item = { ...updatedOrder.items[itemIndex] };
+      item.notes = notes;
+      updatedOrder.items[itemIndex] = item;
+
+      setActiveOrder(updatedOrder);
+      setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
+    }
+  };
+
+  const removeOrderItem = (menuItemId: string) => {
+    if (!activeOrder) return;
+
+    const updatedOrder = { ...activeOrder };
+    updatedOrder.items = updatedOrder.items.filter(i => i.menuItemId !== menuItemId);
+    
+    // Recalculate total
+    updatedOrder.total = updatedOrder.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+    setActiveOrder(updatedOrder);
     setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
   };
 
@@ -172,6 +227,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       systemPrompt,
       createOrder,
       addToOrder,
+      updateOrderItemQuantity,
+      updateOrderItemNotes,
+      removeOrderItem,
       completeOrder,
       updateOrderStatus,
       updateTableStatus,

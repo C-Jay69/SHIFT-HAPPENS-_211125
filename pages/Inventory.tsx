@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store';
-import { AlertTriangle, ArrowDown, Search, Pencil, X, RefreshCcw, Truck, Plus, Check } from 'lucide-react';
+import { AlertTriangle, ArrowDown, Search, Pencil, X, RefreshCcw, Truck, Plus, Check, Save } from 'lucide-react';
 import { Ingredient } from '../types';
 
 interface Supplier {
@@ -15,7 +15,12 @@ const Inventory = () => {
   
   // Edit Ingredient State
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<Ingredient>>({});
+  // Use string | number to handle input state gracefully
+  const [editForm, setEditForm] = useState<{
+    stock: string | number;
+    threshold: string | number;
+    costPerUnit: string | number;
+  }>({ stock: 0, threshold: 0, costPerUnit: 0 });
 
   // Supplier State
   const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
@@ -36,15 +41,19 @@ const Inventory = () => {
 
   const handleSave = () => {
     if (editingId) {
-      updateIngredient(editingId, editForm);
+      updateIngredient(editingId, {
+        stock: Number(editForm.stock),
+        threshold: Number(editForm.threshold),
+        costPerUnit: Number(editForm.costPerUnit)
+      });
       setEditingId(null);
-      setEditForm({});
+      setEditForm({ stock: 0, threshold: 0, costPerUnit: 0 });
     }
   };
 
   const handleCancel = () => {
     setEditingId(null);
-    setEditForm({});
+    setEditForm({ stock: 0, threshold: 0, costPerUnit: 0 });
   };
   
   const handleQuickRestock = (ing: Ingredient) => {
@@ -137,8 +146,9 @@ const Inventory = () => {
                       <td className="px-6 py-4">
                         <input 
                           type="number" 
+                          min="0"
                           value={editForm.stock}
-                          onChange={(e) => setEditForm({...editForm, stock: parseFloat(e.target.value) || 0})}
+                          onChange={(e) => setEditForm({...editForm, stock: e.target.value})}
                           className="w-24 p-2 border border-shift-blue rounded-lg font-mono bg-white focus:outline-none focus:ring-2 focus:ring-shift-blue/20"
                           autoFocus
                         />
@@ -149,8 +159,9 @@ const Inventory = () => {
                            <span className="text-[10px] uppercase font-bold text-gray-400">Min</span>
                            <input 
                             type="number" 
+                            min="0"
                             value={editForm.threshold}
-                            onChange={(e) => setEditForm({...editForm, threshold: parseFloat(e.target.value) || 0})}
+                            onChange={(e) => setEditForm({...editForm, threshold: e.target.value})}
                             className="w-20 p-2 border border-shift-blue rounded-lg font-mono bg-white text-sm focus:outline-none focus:ring-2 focus:ring-shift-blue/20"
                           />
                         </div>
@@ -161,8 +172,9 @@ const Inventory = () => {
                            <input 
                               type="number" 
                               step="0.01"
+                              min="0"
                               value={editForm.costPerUnit}
-                              onChange={(e) => setEditForm({...editForm, costPerUnit: parseFloat(e.target.value) || 0})}
+                              onChange={(e) => setEditForm({...editForm, costPerUnit: e.target.value})}
                               className="w-24 p-2 border border-shift-blue rounded-lg font-mono bg-white text-right focus:outline-none focus:ring-2 focus:ring-shift-blue/20"
                             />
                          </div>
@@ -171,17 +183,17 @@ const Inventory = () => {
                         <div className="flex justify-end gap-2">
                           <button 
                             onClick={handleSave} 
-                            className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors shadow-sm"
+                            className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm flex items-center gap-1 text-xs font-bold"
                             title="Save Changes"
                           >
-                            <Check size={18} />
+                            <Check size={14} /> Save
                           </button>
                           <button 
                             onClick={handleCancel} 
-                            className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors shadow-sm"
+                            className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors shadow-sm flex items-center gap-1 text-xs font-bold"
                             title="Discard Changes"
                           >
-                            <X size={18} />
+                            <X size={14} /> Cancel
                           </button>
                         </div>
                       </td>
@@ -222,10 +234,10 @@ const Inventory = () => {
                     <td className="px-6 py-4 text-right">
                       <button 
                         onClick={() => startEdit(ing)} 
-                        className="p-2 hover:bg-blue-100 text-gray-400 hover:text-shift-blue rounded-full transition-colors"
+                        className="flex items-center gap-1 ml-auto px-3 py-1.5 bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-shift-blue rounded-lg transition-colors text-xs font-bold"
                         aria-label="Edit ingredient"
                       >
-                        <Pencil size={16} />
+                        <Pencil size={14} /> Edit
                       </button>
                     </td>
                   </tr>
