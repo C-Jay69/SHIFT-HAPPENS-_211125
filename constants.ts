@@ -1,4 +1,4 @@
-import { Ingredient, MenuItem, Table, Reservation, TableStatus } from './types';
+import { Ingredient, MenuItem, Table, Reservation, TableStatus } from './types.ts';
 
 export const INITIAL_INGREDIENTS: Ingredient[] = [
   { id: 'ing_1', name: 'Beef Patty', stock: 50, unit: 'pcs', threshold: 10, costPerUnit: 2.50 },

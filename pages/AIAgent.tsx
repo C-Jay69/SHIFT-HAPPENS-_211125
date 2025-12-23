@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { generateRestaurantAssistantResponse } from '../services/geminiService';
-import { useAppStore } from '../store';
+import { generateRestaurantAssistantResponse } from '../services/geminiService.ts';
+import { useAppStore } from '../store.tsx';
 import { Bot, Send, Loader2, Sparkles } from 'lucide-react';
 
 const AIAgent = () => {

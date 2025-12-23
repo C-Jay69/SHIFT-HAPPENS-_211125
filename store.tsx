@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Ingredient, MenuItem, Table, Order, Reservation, OrderStatus, TableStatus } from './types';
-import { INITIAL_INGREDIENTS, INITIAL_TABLES, INITIAL_RESERVATIONS, MENU_ITEMS as INITIAL_MENU_ITEMS } from './constants';
+import { Ingredient, MenuItem, Table, Order, Reservation, OrderStatus, TableStatus } from './types.ts';
+import { INITIAL_INGREDIENTS, INITIAL_TABLES, INITIAL_RESERVATIONS, MENU_ITEMS as INITIAL_MENU_ITEMS } from './constants.ts';
 
 interface AppContextType {
   ingredients: Ingredient[];

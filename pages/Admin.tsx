@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAppStore } from '../store';
-import { MenuItem } from '../types';
+import { useAppStore } from '../store.tsx';
+import { MenuItem } from '../types.ts';
 import { Lock, Save, Plus, Trash2, AlertTriangle, Activity, Database, Bot, Settings, RefreshCcw, Check, X, Palette } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 

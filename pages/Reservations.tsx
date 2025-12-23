@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAppStore } from '../store';
-import { TableStatus, Reservation, Table } from '../types';
+import { useAppStore } from '../store.tsx';
+import { TableStatus, Reservation, Table } from '../types.ts';
 import { Users, Clock, Phone, Plus, X, Armchair, CheckCircle, AlertCircle, Trash2, Edit2 } from 'lucide-react';
 
 const Reservations = () => {

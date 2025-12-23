@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { AppProvider } from './store';
-import Sidebar from './components/Sidebar';
-import Dashboard from './pages/Dashboard';
-import POS from './pages/POS';
-import Inventory from './pages/Inventory';
-import Reservations from './pages/Reservations';
-import AIAgent from './pages/AIAgent';
-import KDS from './pages/KDS';
-import Admin from './pages/Admin';
+import { AppProvider } from './store.tsx';
+import Sidebar from './components/Sidebar.tsx';
+import Dashboard from './pages/Dashboard.tsx';
+import POS from './pages/POS.tsx';
+import Inventory from './pages/Inventory.tsx';
+import Reservations from './pages/Reservations.tsx';
+import AIAgent from './pages/AIAgent.tsx';
+import KDS from './pages/KDS.tsx';
+import Admin from './pages/Admin.tsx';
 import { Menu } from 'lucide-react';
 
 const MobileHeader = ({ onOpen }: { onOpen: () => void }) => (

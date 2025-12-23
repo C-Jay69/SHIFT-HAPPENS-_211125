@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAppStore } from '../store';
-import { OrderStatus } from '../types';
+import { useAppStore } from '../store.tsx';
+import { OrderStatus } from '../types.ts';
 import { Clock, CheckCircle, ChefHat, Coffee, AlertCircle } from 'lucide-react';
 
 const KDS = () => {

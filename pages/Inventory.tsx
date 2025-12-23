@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useAppStore } from '../store';
+import { useAppStore } from '../store.tsx';
 import { AlertTriangle, ArrowDown, Search, Pencil, X, RefreshCcw, Truck, Plus, Check, Save } from 'lucide-react';
-import { Ingredient } from '../types';
+import { Ingredient } from '../types.ts';
 
 interface Supplier {
   id: string;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { useAppStore } from '../store';
+import { useAppStore } from '../store.tsx';
 import { DollarSign, Users, TrendingUp, AlertTriangle } from 'lucide-react';
 
 const data = [
