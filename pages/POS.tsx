@@ -19,7 +19,7 @@ const POS = () => {
     ingredients
   } = useAppStore();
   
-  const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'FOOD' | 'DRINK'>('ALL');
+  const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'FOOD' | 'DRINK' | 'DESSERT'>('ALL');
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   
   // AI Suggestions State
@@ -168,13 +168,13 @@ const POS = () => {
       <div className="flex-1 flex flex-col gap-4">
         {/* Category Filters */}
         <div className="flex gap-3 overflow-x-auto pb-2">
-          {['ALL', 'FOOD', 'DRINK'].map((cat) => (
+          {(['ALL', 'FOOD', 'DRINK', 'DESSERT'] as const).map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat as any)}
+              onClick={() => setSelectedCategory(cat)}
               className={`px-6 py-3 rounded-full font-bold text-sm transition-colors ${
-                selectedCategory === cat 
-                  ? 'bg-shift-dark text-white' 
+                selectedCategory === cat
+                  ? 'bg-shift-dark text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >

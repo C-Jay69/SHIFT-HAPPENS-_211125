@@ -9,7 +9,15 @@ import Reservations from './pages/Reservations.tsx';
 import AIAgent from './pages/AIAgent.tsx';
 import KDS from './pages/KDS.tsx';
 import Admin from './pages/Admin.tsx';
-import { Menu } from 'lucide-react';
+import { Menu, AlertTriangle } from 'lucide-react';
+
+const NotFound = () => (
+  <div className="flex flex-col items-center justify-center h-[70vh] space-y-4 text-gray-400">
+    <AlertTriangle size={64} className="text-shift-amber" />
+    <h2 className="text-3xl font-bold text-shift-dark">404 — Page Not Found</h2>
+    <p>That page doesn't exist. Check the sidebar navigation.</p>
+  </div>
+);
 
 const MobileHeader = ({ onOpen }: { onOpen: () => void }) => (
   <div className="md:hidden flex items-center justify-between p-4 bg-shift-dark text-white sticky top-0 z-30 shadow-md">
@@ -37,6 +45,7 @@ function App() {
                 <Route path="/agent" element={<AIAgent />} />
                 <Route path="/kds" element={<KDS />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
           </div>

@@ -34,7 +34,7 @@ const Admin = () => {
     if (pin === '1234') {
       setIsAuthenticated(true);
     } else {
-      alert('Incorrect PIN. Hint: 1234');
+      alert('Incorrect PIN. Please contact your manager.');
       setPin('');
     }
   };
@@ -93,7 +93,7 @@ const Admin = () => {
           >
             UNLOCK PANEL
           </button>
-          <p className="text-xs text-gray-300">Dev Hint: 1234</p>
+
         </div>
       </div>
     );
